@@ -123,15 +123,16 @@ def main():
     # --- Product Database Section ---
     st.header("Product Database")
     with st.form(key="product_form"):
-        product_name = st.text_input("Product Name:", key="product_name_input", value="")  # Initialize value
-        sku = st.text_input("SKU:", key="sku_input", value="") # Initialize value
+        # Initialize values in the text_input widgets
+        product_name = st.text_input("Product Name:", key="product_name_input", value=st.session_state.get("product_name_input", ""))
+        sku = st.text_input("SKU:", key="sku_input", value=st.session_state.get("sku_input", ""))
         submit_product = st.form_submit_button("Add/Update Product")
 
         if submit_product:
             if product_name and sku:
                 add_product(sku, product_name)
 
-                # Clear the input fields by setting their session state values *before* the widgets are created
+                # Clear the input fields using st.session_state *after* add_product but *before* st.rerun()
                 st.session_state["product_name_input"] = ""
                 st.session_state["sku_input"] = ""
 
