@@ -1,12 +1,13 @@
 import streamlit as st
 import pandas as pd
 import psycopg2
+import os
 
-# Database credentials
-PGHOST='ep-young-sound-a5fmuzwl.us-east-2.aws.neon.tech'
-PGDATABASE='finance_data'
-PGUSER='neondb_owner'
-PGPASSWORD='uqAcYd9sF3xl'
+# Database credentials - Get from Streamlit Secrets (Environment Variables)
+PGHOST = os.environ.get("PGHOST")
+PGDATABASE = os.environ.get("PGDATABASE")
+PGUSER = os.environ.get("PGUSER")
+PGPASSWORD = os.environ.get("PGPASSWORD")
 
 
 # --- Database Connection Function ---
@@ -122,15 +123,18 @@ def main():
     # --- Product Database Section ---
     st.header("Product Database")
     with st.form(key="product_form"):
-        product_name = st.text_input("Product Name:", key="product_name_input")
-        sku = st.text_input("SKU:", key="sku_input")
+        product_name = st.text_input("Product Name:", key="product_name_input", value="")  # Initialize value
+        sku = st.text_input("SKU:", key="sku_input", value="") # Initialize value
         submit_product = st.form_submit_button("Add/Update Product")
 
         if submit_product:
             if product_name and sku:
                 add_product(sku, product_name)
-                st.session_state.product_name_input = "" # Clear input field
-                st.session_state.sku_input = ""  # Clear input field
+
+                # Clear the input fields by setting their session state values *before* the widgets are created
+                st.session_state["product_name_input"] = ""
+                st.session_state["sku_input"] = ""
+
                 st.rerun() # Refresh to update the table
             else:
                 st.warning("Product Name and SKU are required.")
